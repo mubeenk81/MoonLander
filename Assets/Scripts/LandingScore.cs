@@ -25,14 +25,18 @@ public class LandingScore : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         UpdateScoreDisplay();
 
-        int highScore = PlayerPrefs.GetInt("HighScore", 0);
-        Debug.Log("🧠 Loaded high score: " + highScore);
+        ShowHighScore();
+    }
 
+    void ShowHighScore()
+    {
+        int highScore = PlayerPrefs.GetInt("HighScore", 0);
         if (highScoreText != null)
         {
             highScoreText.text = "High Score: " + highScore;
         }
     }
+
 
     void Update()
     {
@@ -110,20 +114,29 @@ public class LandingScore : MonoBehaviour
     }
     void EndGame()
     {
-        Time.timeScale = 0f;
-
+        Time.timeScale = 0f; // Pause game
         int finalScore = Mathf.RoundToInt(score);
-        finalScoreText.text = "Final Score: " + finalScore;
 
-        // 🔐 Save high score if it's a new record
-        int currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
-        if (finalScore > currentHighScore)
+        // Show panel
+        if (endScreenPanel != null) endScreenPanel.SetActive(true);
+        if (finalScoreText != null) finalScoreText.text = "Score: " + finalScore;
+
+        // Save and show high score
+        int currentHigh = PlayerPrefs.GetInt("HighScore", 0);
+        if (finalScore > currentHigh)
         {
             PlayerPrefs.SetInt("HighScore", finalScore);
-            PlayerPrefs.Save(); // 🧠 Save to disk
-            Debug.Log("🎉 New high score saved: " + finalScore);
+            PlayerPrefs.Save();
         }
+
+        if (highScoreText != null)
+        {
+            highScoreText.text = "High Score: " + PlayerPrefs.GetInt("HighScore", 0);
+        }
+
+        Debug.Log("🏁 Game Over — Final Score: " + finalScore);
     }
+
 
 
     public void ReloadScene()
